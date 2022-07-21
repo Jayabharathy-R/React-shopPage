@@ -1,9 +1,8 @@
-import React from 'react';
+import React,{useState} from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import './App.css';
-//import checckoutPage from './checkoutPage';
 
-import { styled } from '@mui/material/styles';
+
 import {
   AppBar,
   Box,
@@ -12,72 +11,100 @@ import {
   Typography,
   Menu,
   Container,
-  Avatar,
-  Tooltip,
   Button,
   MenuItem,
-  Paper,
+  
   Grid,
   Card,
   CardActions,
   CardContent,
-  Rating,
-  appBarClasses,
+  Rating
 } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { useNavigate } from 'react-router-dom';
 
 export default function App() {
-
+  const navigate=useNavigate();
+  const data = [
+    {
+      id: "1",
+      name: "Special Item",
+      price: "18"
+    },
+    {
+      id: "2",
+      name: "Sale Item",
+      price: "25"
+    },
+    {
+      id: "3",
+      name: "Popular Item",
+      price: "40"
+    },
+    {
+      id: "4",
+      name: "Sale Item",
+      price: "25"
+    },
+    {
+      id: "5",
+      name: "Special Item",
+      price: "18"
+    },
+    {
+      id: "6",
+      name: "Popular Item",
+      price: "40"
+    }
+  ]
   const pages = ['Home', 'About'];
-  const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [value, setValue] = React.useState(5);
-  const [count, setCount] = React.useState(0);
+  const [count, setCount] = useState(0);
+  const value = 5;
+  const [items, setItems] = useState([]);
 
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
 
-
-  const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  }));
-
-  const handlechange = async(e) => {
  
-console.log(e)
-    if (e.target.textContent === "Add to Cart") {
-      await setCount(count + 1);
-      e.target.textContent = "Remove";
-    
+  const handleChange = async (e) => {
+
+
+   if (e.target.textContent === "Add to Cart") {
+   
+      setCount(count + 1);
+      e.target.textContent ="Remove";
+      console.log(e.target.textContent);
+      
+      const cartItem = data.filter(items => e.target.id === items.id);
+      //console.log(cartItem)
+      await setItems([...items, cartItem[0]]);
+     console.log(items)
+
 
     }
-    else if (e.target.textContent === "Remove") {
-      await setCount(count - 1);
-      e.target.textContent = "Add to Cart";
-      
-      
+    else if (e.target.textContent ==="Remove") {
+     
+     e.target.textContent = "Add to Cart";
+      setCount(count - 1);
+      const itemsAfterRemoved =items.filter(items => e.target.id !== items.id);
+      console.log(itemsAfterRemoved)
+      await setItems([itemsAfterRemoved]);
+
+
     }
 
   }
+
+
   return (
     <div>
       <div>
@@ -156,35 +183,7 @@ console.log(e)
                 <option>New Arrivals</option>
               </select>
 
-              <Box sx={{ flexGrow: 0 }}>
-                <Tooltip title="Open settings">
-
-                  <button id="cart" onClick={()=><checkoutPage/>}><ShoppingCartIcon fontSize="small" /> &nbsp;Cart&nbsp;<span id="count">{count}</span></button>
-
-                </Tooltip>
-                <Menu
-                  sx={{ mt: '45px' }}
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
-                >
-                  {settings.map((setting) => (
-                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                      <Typography textAlign="center">{setting}</Typography>
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </Box>
+              <button id="cart" onClick={() => navigate('/checkoutPage', { state: {items} })}><ShoppingCartIcon fontSize="small" /> &nbsp;Cart&nbsp;<span id="count">{count}</span></button>
             </Toolbar>
           </Container>
         </AppBar>
@@ -202,13 +201,13 @@ console.log(e)
       </div>
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={3} style={{ padding: "50px" }}>
-          <Grid item xs={3}>
-            <Item> <Card sx={{ minWidth: 275, height: 400, paddingBottom: "20px" }}>
+          <Grid item xs={6} sm={4} md={3}>
+             <Card sx={{  height: 400, paddingBottom: "20px" }}>
               <CardContent>
                 <Typography sx={{ fontSize: 30, height: "100px", backgroundColor: "lightgray", padding: "50px 25px" }} color="text.secondary" gutterBottom>
                   450 x 300
                 </Typography>
-                <Typography variant="h5" component="div">
+                <Typography variant="h5" component="div" >
                   Fancy Product
                 </Typography>
 
@@ -219,15 +218,18 @@ console.log(e)
 
               </CardContent>
               <CardActions>
-                <Button variant="outlined" sx={{ marginLeft: "75px" }}>View Options</Button>
+                <Button variant="outlined" sx={{ margin: "auto"}}>View Options</Button>
               </CardActions>
-            </Card></Item>
+            </Card>
           </Grid>
-          <Grid item xs={3}>
-            <Item> <Card sx={{ minWidth: 275, height: 400, paddingBottom: "20px" }}>
+          <Grid item xs={6} sm={4} md={3}>
+             <Card sx={{  height: 400, paddingBottom: "20px" }}>
               <CardContent>
-                <Typography sx={{ fontSize: 30, height: "100px", backgroundColor: "lightgray", padding: "50px 25px" }} color="text.secondary" gutterBottom>
-                  <span class="sale">sale</span>450 x 300
+              <div  class="div">
+                <span class="sale">sale</span>
+                </div>
+                <Typography sx={{ fontSize: 30, height: "70px", backgroundColor: "lightgray", padding: "50px 25px" }} color="text.secondary" gutterBottom>
+                  450 x 300
                 </Typography>
                 <Typography variant="h5" component="div">
                   Special Item
@@ -239,15 +241,20 @@ console.log(e)
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button variant="outlined" sx={{ marginLeft: "75px" }} id="cart1" onClick={(e) => handlechange(e)}>Add to Cart</Button>
+                <Button variant="outlined" sx={{ margin: "auto" }} id="1"
+                 onClick={(e) => handleChange(e)}>Add to Cart</Button>
               </CardActions>
-            </Card></Item>
+            </Card>
           </Grid>
-          <Grid item xs={3}>
-            <Item><Card sx={{ minWidth: 275, height: 400, paddingBottom: "20px" }}>
+          <Grid item xs={6} sm={4} md={3}>
+            <Card sx={{  height: 400, paddingBottom: "20px" }}>
               <CardContent>
-                <Typography sx={{ fontSize: 30, height: "100px", backgroundColor: "lightgray", padding: "50px 25px" }} color="text.secondary" gutterBottom>
-                  <span class="sale">sale</span>450 x 300
+                <div  class="div">
+                <span class="sale">sale</span>
+                </div>
+              
+                <Typography sx={{ fontSize: 30, height: "70px", backgroundColor: "lightgray", padding: "50px 25px" }} color="text.secondary" gutterBottom>
+                  450 x 300
                 </Typography>
                 <Typography variant="h5" component="div">
                   Sale Item
@@ -260,12 +267,12 @@ console.log(e)
 
               </CardContent>
               <CardActions>
-                <Button variant="outlined" sx={{ marginLeft: "80px" }} onClick={(e) => handlechange(e)}>Add to Cart</Button>
+                <Button variant="outlined" sx={{ margin: "auto"}} id="2" onClick={(e) => handleChange(e)}>Add to Cart</Button>
               </CardActions>
-            </Card></Item>
+            </Card>
           </Grid>
-          <Grid item xs={3}>
-            <Item><Card sx={{ minWidth: 275, height: 400, paddingBottom: "20px" }}>
+          <Grid item xs={6} sm={4} md={3}>
+            <Card sx={{  height: 400, paddingBottom: "20px" }}>
               <CardContent>
                 <Typography sx={{ fontSize: 30, height: "100px", backgroundColor: "lightgray", padding: "50px 25px" }} color="text.secondary" gutterBottom>
                   450 x 300
@@ -282,15 +289,18 @@ console.log(e)
 
               </CardContent>
               <CardActions>
-                <Button variant="outlined" sx={{ marginLeft: "80px" }} onClick={(e) => handlechange(e)}>Add to Cart</Button>
+                <Button variant="outlined" sx={{ margin: "auto" }} id="3" onClick={(e) => handleChange(e)}>Add to Cart</Button>
               </CardActions>
-            </Card></Item>
+            </Card>
           </Grid>
-          <Grid item xs={3}>
-            <Item><Card sx={{ minWidth: 275, height: 400, paddingBottom: "20px" }}>
+          <Grid item xs={6} sm={4} md={3}>
+            <Card sx={{  height: 400, paddingBottom: "20px" }}>
               <CardContent>
-                <Typography sx={{ fontSize: 30, height: "100px", backgroundColor: "lightgray", padding: "50px 25px" }} color="text.secondary" gutterBottom>
-                  <span class="sale">sale</span>450 x 300
+              <div  class="div">
+                <span class="sale">sale</span>
+                </div>
+                <Typography sx={{ fontSize: 30, height: "70px", backgroundColor: "lightgray", padding: "50px 25px" }} color="text.secondary" gutterBottom>
+                  450 x 300
                 </Typography>
                 <Typography variant="h5" component="div">
                   Sale Item
@@ -303,12 +313,12 @@ console.log(e)
 
               </CardContent>
               <CardActions>
-                <Button variant="outlined" sx={{ marginLeft: "80px" }} onClick={(e) => handlechange(e)}>Add to Cart</Button>
+                <Button variant="outlined" sx={{ margin: "auto" }} id="4" onClick={(e) => handleChange(e)}>Add to Cart</Button>
               </CardActions>
-            </Card></Item>
+            </Card>
           </Grid>
-          <Grid item xs={3}>
-            <Item> <Card sx={{ minWidth: 275, height: 400, paddingBottom: "20px" }}>
+          <Grid item xs={6} sm={4} md={3}>
+             <Card sx={{ height: 400, paddingBottom: "20px" }}>
               <CardContent>
 
                 <Typography sx={{ fontSize: 30, height: "100px", backgroundColor: "lightgray", padding: "50px 25px" }} color="text.secondary" gutterBottom>
@@ -326,15 +336,18 @@ console.log(e)
 
               </CardContent>
               <CardActions>
-                <Button variant="outlined" sx={{ marginLeft: "75px" }}>View Options</Button>
+                <Button variant="outlined" sx={{ margin: "auto" }}>View Options</Button>
               </CardActions>
-            </Card></Item>
+            </Card>
           </Grid>
-          <Grid item xs={3}>
-            <Item> <Card sx={{ minWidth: 275, height: 400, paddingBottom: "20px" }}>
+          <Grid item xs={6} sm={4} md={3}>
+             <Card sx={{  height: 400, paddingBottom: "20px" }}>
               <CardContent>
-                <Typography sx={{ fontSize: 30, height: "100px", backgroundColor: "lightgray", padding: "50px 25px" }} color="text.secondary" gutterBottom>
-                  <span class="sale">sale</span>450 x 300
+              <div  class="div">
+                <span class="sale">sale</span>
+                </div>
+                <Typography sx={{ fontSize: 30, height: "70px", backgroundColor: "lightgray", padding: "50px 25px" }} color="text.secondary" gutterBottom>
+                  450 x 300
                 </Typography>
                 <Typography variant="h5" component="div">
                   Special Item
@@ -346,12 +359,12 @@ console.log(e)
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button variant="outlined" sx={{ marginLeft: "75px" }} onClick={(e) => handlechange(e)}>Add to Cart</Button>
+                <Button variant="outlined" sx={{ margin: "auto" }} id="5" onClick={(e) => handleChange(e)}>Add to Cart</Button>
               </CardActions>
-            </Card></Item>
+            </Card>
           </Grid>
-          <Grid item xs={3}>
-            <Item><Card sx={{ minWidth: 275, height: 400, paddingBottom: "20px" }}>
+          <Grid item xs={6} sm={4} md={3}>
+            <Card sx={{  height: 400, paddingBottom: "20px" }}>
               <CardContent>
                 <Typography sx={{ fontSize: 30, height: "100px", backgroundColor: "lightgray", padding: "50px 25px" }} color="text.secondary" gutterBottom>
                   450 x 300
@@ -368,9 +381,9 @@ console.log(e)
 
               </CardContent>
               <CardActions>
-                <Button variant="outlined" sx={{ marginLeft: "80px" }} onClick={(e) => handlechange(e)}>Add to Cart</Button>
+                <Button variant="outlined" sx={{ margin: "auto" }} id="6" onClick={(e) => handleChange(e)}>Add to Cart</Button>
               </CardActions>
-            </Card></Item>
+            </Card>
           </Grid>
         </Grid>
       </Box>
